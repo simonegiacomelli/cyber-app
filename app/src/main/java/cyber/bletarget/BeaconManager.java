@@ -101,17 +101,30 @@ public class BeaconManager {
                 index = 0;
 
             beacons.get(index).gatt.readRemoteRssi();
-            StringBuilder sb = new StringBuilder();
+            StringBuilder rssi = new StringBuilder();
             for (Beacon b : beacons) {
-                sb.append(b.rssi);
-                sb.append(",");
+                rssi.append(b.rssi);
+                rssi.append(",");
             }
-            sb.append(counter);
+
+            for (Beacon b : beacons) {
+                rssi.append(b.age());
+                rssi.append(",");
+            }
+            rssi.append(counter);
 
 
-            String line = sb.toString();
+            String line = rssi.toString();
             mqttRssi.publish("cyber/rssi", line);
-            homeViewModel.mText.postValue(line);
+
+            StringBuilder connstat = new StringBuilder();
+            for (Beacon b : beacons) {
+
+                connstat.append(b.connected());
+                connstat.append(",");
+            }
+            homeViewModel.mText.postValue(line + "\n" + connstat);
+
             Log.i("CYBER", line);
             try {
                 Thread.sleep(90);
