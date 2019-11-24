@@ -15,14 +15,15 @@ public class ConnectionManager {
 
     public void pollConnection() {
         if (System.currentTimeMillis() - last > 1000) {
-            List<Beacon> disconnected = this.beacons.stream().filter(b -> b.connectable()).collect(Collectors.toList());
+            List<Beacon> disconnected = this.beacons.stream().filter(Beacon::connectable).collect(Collectors.toList());
             if (disconnected.size() > 0) {
                 index++;
                 if (index >= disconnected.size())
                     index = 0;
-                disconnected.get(index).connect();
+                Beacon beacon = disconnected.get(index);
+                beacon.connect();
+                last = System.currentTimeMillis();
             }
-            last = System.currentTimeMillis();
         }
     }
 }

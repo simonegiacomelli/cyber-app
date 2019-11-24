@@ -1,6 +1,7 @@
 package cyber.bletarget.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+        Log.i("TAG1", "HomeFragment.onCreateView()");
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -33,10 +35,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        if (beaconManager == null)
-            beaconManager = new BeaconManager(getActivity(), getContext(),homeViewModel);
-
-        beaconManager.connectBeacons();
 
 
 

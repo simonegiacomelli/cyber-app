@@ -17,6 +17,7 @@ public class Beacon extends BluetoothGattCallback {
     long millis = System.currentTimeMillis();
     private boolean connected;
     private boolean ack = true;
+    long lastConReq = 0;
 
     public Beacon(String address, BluetoothDevice device, Context applicationContext) {
         this.address = address;
@@ -67,9 +68,13 @@ public class Beacon extends BluetoothGattCallback {
     public synchronized void connect() {
         if (!connectable())
             return;
-        Log.i("TAG1", address + " connect");
+        Log.i("TAG1", address + " connect request");
         ack = false;
-        gatt = device.connectGatt(applicationContext, false, this);
+        if (gatt == null) {
+            gatt = device.connectGatt(applicationContext, true, this);
+        } else
+            gatt.connect();
+        lastConReq = System.currentTimeMillis();
     }
 
     public void readRemoteRssi() {
@@ -78,6 +83,6 @@ public class Beacon extends BluetoothGattCallback {
     }
 
     public boolean connectable() {
-        return !connected && ack;
+        return !connected && (System.currentTimeMillis() - lastConReq > 2000);
     }
 }

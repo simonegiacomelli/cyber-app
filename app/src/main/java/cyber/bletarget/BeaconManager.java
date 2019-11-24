@@ -29,30 +29,21 @@ public class BeaconManager {
     String DAVE = "c5:7c:30:e4:a5:66";
     String FERRANTE = "f7:a2:7a:d2:40:1c";
     String SIMO = "f3:4e:e8:df:11:bc";
-        List<String> addresses = Arrays.asList(FERRANTE, BEN, SIMO);
-//    List<String> addresses = Arrays.asList(BEN);
+    List<String> addresses = Arrays.asList(FERRANTE, BEN, SIMO);
+    //    List<String> addresses = Arrays.asList(BEN);
     private BluetoothAdapter mBTAdapter;
     private Context applicationContext;
     private HomeViewModel homeViewModel;
     private Thread thread;
-    private Activity activity;
 
-    public BeaconManager(Activity activity, Context applicationContext, HomeViewModel homeViewModel) {
-        this.activity = activity;
+    public BeaconManager(Context applicationContext, HomeViewModel homeViewModel) {
         this.applicationContext = applicationContext;
         this.homeViewModel = homeViewModel;
     }
-    //"d5:61:6b:fb:8d:e3");
-//        ,
-//                "d6:82:a5:47:bf:ac",
-//                "c5:7c:30:e4:a5:66");
 
     public synchronized void connectBeacons() {
 
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
-        // Ask for location permission if not already allowed
-        if (ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
 
         if (thread != null)
             return;
