@@ -23,12 +23,14 @@ import cyber.bletarget.ui.home.HomeViewModel;
 public class BeaconManager {
 
     ArrayList<Beacon> beacons = new ArrayList<>();
+    ConnectionManager connectionManager = new ConnectionManager(beacons);
     String BEN = "d5:61:6b:fb:8d:e3";
     String CARL = "d6:82:a5:47:bf:ac";
     String DAVE = "c5:7c:30:e4:a5:66";
     String FERRANTE = "f7:a2:7a:d2:40:1c";
     String SIMO = "f3:4e:e8:df:11:bc";
-    List<String> addresses = Arrays.asList(FERRANTE, BEN, SIMO);
+        List<String> addresses = Arrays.asList(FERRANTE, BEN, SIMO);
+//    List<String> addresses = Arrays.asList(BEN);
     private BluetoothAdapter mBTAdapter;
     private Context applicationContext;
     private HomeViewModel homeViewModel;
@@ -75,24 +77,15 @@ public class BeaconManager {
         addresses.forEach(addr -> {
             String address = addr.toUpperCase();
             BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
-            Beacon beacon = new Beacon(addr);
-
-            BluetoothGatt gatt = device.connectGatt(applicationContext, true, beacon);
-            beacon.gatt = gatt;
-            beacon.device = device;
+            Beacon beacon = new Beacon(addr, device, applicationContext);
             beacons.add(beacon);
-            try {
-                Thread.sleep(900);
-            } catch (InterruptedException e) {
-
-            }
-
         });
+
         int index = 0;
         long counter = 0;
-        long prev = System.currentTimeMillis();
-        while (Thread.currentThread().isAlive()) {
 
+        while (Thread.currentThread().isAlive()) {
+            connectionManager.pollConnection();
             counter++;
             long curr = System.currentTimeMillis();
 
@@ -100,7 +93,7 @@ public class BeaconManager {
             if (index >= beacons.size())
                 index = 0;
 
-            beacons.get(index).gatt.readRemoteRssi();
+            beacons.get(index).readRemoteRssi();
             StringBuilder rssi = new StringBuilder();
             for (Beacon b : beacons) {
                 rssi.append(b.rssi);
@@ -119,13 +112,12 @@ public class BeaconManager {
 
             StringBuilder connstat = new StringBuilder();
             for (Beacon b : beacons) {
-
                 connstat.append(b.connected());
                 connstat.append(",");
             }
             homeViewModel.mText.postValue(line + "\n" + connstat);
 
-            Log.i("CYBER", line);
+            //Log.i("TAG1", line);
             try {
                 Thread.sleep(90);
             } catch (InterruptedException e) {
