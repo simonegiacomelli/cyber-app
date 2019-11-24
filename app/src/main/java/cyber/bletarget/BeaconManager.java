@@ -20,7 +20,7 @@ import java.util.List;
 
 import cyber.bletarget.ui.home.HomeViewModel;
 
-class BeaconManager {
+public class BeaconManager {
 
     ArrayList<Beacon> beacons = new ArrayList<>();
     String BEN = "d5:61:6b:fb:8d:e3";
@@ -31,19 +31,21 @@ class BeaconManager {
     List<String> addresses = Arrays.asList(FERRANTE, BEN, SIMO);
     private BluetoothAdapter mBTAdapter;
     private Context applicationContext;
+    private HomeViewModel homeViewModel;
     private Thread thread;
-    private FragmentActivity activity;
+    private Activity activity;
 
-    public BeaconManager(FragmentActivity activity, Context applicationContext) {
+    public BeaconManager(Activity activity, Context applicationContext, HomeViewModel homeViewModel) {
         this.activity = activity;
         this.applicationContext = applicationContext;
+        this.homeViewModel = homeViewModel;
     }
     //"d5:61:6b:fb:8d:e3");
 //        ,
 //                "d6:82:a5:47:bf:ac",
 //                "c5:7c:30:e4:a5:66");
 
-    synchronized void connectBeacons() {
+    public synchronized void connectBeacons() {
 
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         // Ask for location permission if not already allowed
@@ -67,7 +69,7 @@ class BeaconManager {
     MqttRssi mqttRssi = new MqttRssi();
 
     private void internalRun() {
-        ViewModelProviders.of(activity).get(HomeViewModel.class);
+
         mqttRssi.connect();
 
         addresses.forEach(addr -> {
@@ -90,6 +92,7 @@ class BeaconManager {
         long counter = 0;
         long prev = System.currentTimeMillis();
         while (Thread.currentThread().isAlive()) {
+
             counter++;
             long curr = System.currentTimeMillis();
 
@@ -106,10 +109,10 @@ class BeaconManager {
             sb.append(counter);
 
 
-            //textView3.setText(sb.toString());
-            mqttRssi.publish("cyber/rssi", sb.toString());
-            Log.i("CYBER", sb.toString());
-//                Log.i("CYBER", "looping");
+            String line = sb.toString();
+            mqttRssi.publish("cyber/rssi", line);
+            homeViewModel.mText.postValue(line);
+            Log.i("CYBER", line);
             try {
                 Thread.sleep(90);
             } catch (InterruptedException e) {

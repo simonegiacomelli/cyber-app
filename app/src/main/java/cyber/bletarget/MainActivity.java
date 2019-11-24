@@ -17,8 +17,6 @@ import android.view.View;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -40,12 +38,9 @@ import android.widget.TextView;
 
 import java.util.UUID;
 
-import cyber.bletarget.ui.home.HomeViewModel;
-
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    BeaconManager beaconManager;
 
     TextView textView3;
 
@@ -57,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
 
         textView3 = findViewById(R.id.textView3);
         setSupportActionBar(toolbar);
-
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -80,12 +74,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        if (beaconManager == null)
-            beaconManager = new BeaconManager(this, getApplicationContext());
 
-        beaconManager.connectBeacons();
-        FragmentActivity activity = this;
-        ViewModelProviders.of(activity).get(HomeViewModel.class);
+
     }
 
     @Override

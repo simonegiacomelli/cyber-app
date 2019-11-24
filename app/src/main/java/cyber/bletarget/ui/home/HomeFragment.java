@@ -12,11 +12,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import cyber.bletarget.BeaconManager;
 import cyber.bletarget.R;
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
+    BeaconManager beaconManager;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -30,6 +32,15 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+        if (beaconManager == null)
+            beaconManager = new BeaconManager(getActivity(), getContext(),homeViewModel);
+
+        beaconManager.connectBeacons();
+
+
+
         return root;
     }
+
 }
