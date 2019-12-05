@@ -27,9 +27,12 @@ public class BeaconManager {
     String BEN = "d5:61:6b:fb:8d:e3";
     String CARL = "d6:82:a5:47:bf:ac";
     String DAVE = "c5:7c:30:e4:a5:66";
-    String FERRANTE = "f7:a2:7a:d2:40:1c";
+    //    String FERRANTE = "f7:a2:7a:d2:40:1c";
     String SIMO = "f3:4e:e8:df:11:bc";
-    List<String> addresses = Arrays.asList(FERRANTE, BEN, SIMO);
+    String ANDREA = "dc:45:a3:e5:90:41";
+    String ALE = "c2:e3:b0:2b:b9:bf";
+    //    String WEI = "";
+    List<String> addresses = Arrays.asList(BEN, CARL, DAVE, SIMO, ANDREA, ALE);
     //    List<String> addresses = Arrays.asList(BEN);
     private BluetoothAdapter mBTAdapter;
     private Context applicationContext;
