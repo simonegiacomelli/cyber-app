@@ -32,6 +32,7 @@ public class BeaconManager {
     String ANDREA = "dc:45:a3:e5:90:41";
     String ALE = "c2:e3:b0:2b:b9:bf";
     //    String WEI = "";
+    List<String> names = Arrays.asList("BEN", "CARL", "DAVE", "SIMO", "ANDREA", "ALE");
     List<String> addresses = Arrays.asList(BEN, CARL, DAVE, SIMO, ANDREA, ALE);
     //    List<String> addresses = Arrays.asList(BEN);
     private BluetoothAdapter mBTAdapter;
@@ -67,13 +68,13 @@ public class BeaconManager {
     private void internalRun() {
 
         mqttRssi.connect();
-
-        addresses.forEach(addr -> {
+        for (int i = 0; i < addresses.size(); i++) {
+            String addr = addresses.get(i);
             String address = addr.toUpperCase();
             BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
-            Beacon beacon = new Beacon(addr, device, applicationContext);
+            Beacon beacon = new Beacon(addr, device, applicationContext, names.get(i));
             beacons.add(beacon);
-        });
+        }
 
         int index = 0;
         long counter = 0;
@@ -87,7 +88,10 @@ public class BeaconManager {
             if (index >= beacons.size())
                 index = 0;
 
-            beacons.get(index).readRemoteRssi();
+
+            Beacon beacon = beacons.get(index);
+            if (beacon.connected())
+                beacon.readRemoteRssi();
             StringBuilder rssi = new StringBuilder();
             for (Beacon b : beacons) {
                 rssi.append(b.rssi);
@@ -106,8 +110,10 @@ public class BeaconManager {
 
             StringBuilder connstat = new StringBuilder();
             for (Beacon b : beacons) {
-                connstat.append(b.connected());
-                connstat.append(",");
+                connstat.append(b.name);
+                connstat.append(" ");
+                connstat.append(b.connected() ? "C" : " ");
+                connstat.append("\n");
             }
             homeViewModel.mText.postValue(line + "\n" + connstat);
 

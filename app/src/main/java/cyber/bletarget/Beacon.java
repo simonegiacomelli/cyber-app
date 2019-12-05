@@ -8,6 +8,7 @@ import android.content.Context;
 import android.util.Log;
 
 public class Beacon extends BluetoothGattCallback {
+    public String name;
     String address;
     BluetoothDevice device;
     private final Context applicationContext;
@@ -19,10 +20,15 @@ public class Beacon extends BluetoothGattCallback {
     private boolean ack = true;
     long lastConReq = 0;
 
-    public Beacon(String address, BluetoothDevice device, Context applicationContext) {
+    public Beacon(String address, BluetoothDevice device, Context applicationContext, String name) {
         this.address = address;
         this.device = device;
         this.applicationContext = applicationContext;
+        this.name = name;
+    }
+
+    public Beacon(String address, BluetoothDevice device, Context applicationContext) {
+        this(address, device, applicationContext, address);
     }
 
 
@@ -33,13 +39,13 @@ public class Beacon extends BluetoothGattCallback {
         check(gatt);
         if (newState == BluetoothProfile.STATE_CONNECTED) {
             connected = true;
-            Log.i("TAG1", gatt.getDevice().getAddress() + " " + address + " connected");
+            Log.i("TAG1", gatt.getDevice().getAddress() + " " + name + " connected");
 
             gatt.readRemoteRssi();
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             connected = false;
             rssi = 0;
-            Log.i("TAG1", address + " disconnected");
+            Log.i("TAG1", name + " disconnected");
         }
     }
 
@@ -68,7 +74,7 @@ public class Beacon extends BluetoothGattCallback {
     public synchronized void connect() {
         if (!connectable())
             return;
-        Log.i("TAG1", address + " connect request");
+        Log.i("TAG1", name + " connect request");
         ack = false;
         if (gatt == null) {
             gatt = device.connectGatt(applicationContext, true, this);
