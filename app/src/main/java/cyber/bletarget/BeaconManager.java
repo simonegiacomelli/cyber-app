@@ -1,19 +1,10 @@
 package cyber.bletarget;
 
-import android.Manifest;
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.ParcelUuid;
 import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProviders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +21,7 @@ import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 public class BeaconManager {
 
     ArrayList<Beacon> beacons = new ArrayList<>();
-    ConnectionManager connectionManager = new ConnectionManager(beacons);
+
     String BEN = "d5:61:6b:fb:8d:e3";
     String CARL = "d6:82:a5:47:bf:ac";
     String DAVE = "c5:7c:30:e4:a5:66";
@@ -63,6 +54,7 @@ public class BeaconManager {
             // do nothing
         }
 
+
         @Override
         public void onBatchScanResults(final List<ScanResult> results) {
 
@@ -76,6 +68,10 @@ public class BeaconManager {
 
                     line = addr + "," + rssi + "," + name + "," + result.getTimestampNanos() / 1000;
                     mqttRssi.publish("cyber/rssi", line);
+                    homeViewModel.mText.postValue(line );
+
+
+
                 } catch (Exception ex) {
                     Log.e("TAG1", "exception!", ex);
                 }
@@ -104,84 +100,10 @@ public class BeaconManager {
 
     }
 
-    public synchronized void connectBeaconsInternal() {
 
-        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        if (thread != null)
-            return;
-
-        beacons.clear();
-        thread = new Thread() {
-            public void run() {
-                internalRun();
-
-            }
-        };
-        thread.setDaemon(true);
-        thread.start();
-    }
 
     MqttRssi mqttRssi = new MqttRssi();
 
-    private void internalRun() {
 
-        mqttRssi.connect();
-        for (int i = 0; i < addresses.size(); i++) {
-            String addr = addresses.get(i);
-            String address = addr.toUpperCase();
-            BluetoothDevice device = mBTAdapter.getRemoteDevice(address);
-            Beacon beacon = new Beacon(addr, device, applicationContext, names.get(i));
-            beacons.add(beacon);
-        }
-
-        int index = 0;
-        long counter = 0;
-
-        while (Thread.currentThread().isAlive()) {
-            connectionManager.pollConnection();
-            counter++;
-            long curr = System.currentTimeMillis();
-
-            index++;
-            if (index >= beacons.size())
-                index = 0;
-
-
-            Beacon beacon = beacons.get(index);
-            if (beacon.connected())
-                beacon.readRemoteRssi();
-            StringBuilder rssi = new StringBuilder();
-            for (Beacon b : beacons) {
-                rssi.append(b.rssi);
-                rssi.append(",");
-            }
-
-            for (Beacon b : beacons) {
-                rssi.append(b.age());
-                rssi.append(",");
-            }
-            rssi.append(counter);
-
-
-            String line = rssi.toString();
-            mqttRssi.publish("cyber/rssi", line);
-
-            StringBuilder connstat = new StringBuilder();
-            for (Beacon b : beacons) {
-                connstat.append(b.name);
-                connstat.append(" ");
-                connstat.append(b.connected() ? "C" : " ");
-                connstat.append("\n");
-            }
-            homeViewModel.mText.postValue(line + "\n" + connstat);
-
-            //Log.i("TAG1", line);
-            try {
-                Thread.sleep(90);
-            } catch (InterruptedException e) {
-
-            }
-        }
-    }
 }
+

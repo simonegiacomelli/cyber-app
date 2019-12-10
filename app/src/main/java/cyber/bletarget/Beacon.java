@@ -1,94 +1,20 @@
 package cyber.bletarget;
 
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothProfile;
-import android.content.Context;
-import android.util.Log;
-
-public class Beacon extends BluetoothGattCallback {
+public class Beacon  {
     public String name;
     String address;
-    BluetoothDevice device;
-    private final Context applicationContext;
-    private BluetoothGatt gatt;
-    long counter = 0;
     int rssi = 0;
     long millis = System.currentTimeMillis();
-    private boolean connected;
-    private boolean ack = true;
-    long lastConReq = 0;
 
-    public Beacon(String address, BluetoothDevice device, Context applicationContext, String name) {
+    public Beacon(String address, String name, int rssi) {
         this.address = address;
-        this.device = device;
-        this.applicationContext = applicationContext;
         this.name = name;
-    }
-
-    public Beacon(String address, BluetoothDevice device, Context applicationContext) {
-        this(address, device, applicationContext, address);
-    }
-
-
-    @Override
-    public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-        super.onConnectionStateChange(gatt, status, newState);
-        ack = true;
-        check(gatt);
-        if (newState == BluetoothProfile.STATE_CONNECTED) {
-            connected = true;
-            Log.i("TAG1", gatt.getDevice().getAddress() + " " + name + " connected");
-
-            gatt.readRemoteRssi();
-        } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-            connected = false;
-            rssi = 0;
-            Log.i("TAG1", name + " disconnected");
-        }
-    }
-
-    private void check(BluetoothGatt gatt) {
-        if (this.gatt != gatt) {
-            Log.e("TAG1", "gatt instance id different!!!");
-        }
-    }
-
-    @Override
-    public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
-        super.onReadRemoteRssi(gatt, rssi, status);
-        millis = System.currentTimeMillis();
-        counter++;
         this.rssi = rssi;
     }
 
-    public long age() {
-        return (System.currentTimeMillis() - millis) / 1000;
+
+    public long ageMillis() {
+        return (System.currentTimeMillis() - millis) ;
     }
 
-    public boolean connected() {
-        return connected;
-    }
-
-    public synchronized void connect() {
-        if (!connectable())
-            return;
-        Log.i("TAG1", name + " connect request");
-        ack = false;
-        if (gatt == null) {
-            gatt = device.connectGatt(applicationContext, true, this);
-        } else
-            gatt.connect();
-        lastConReq = System.currentTimeMillis();
-    }
-
-    public void readRemoteRssi() {
-        if (connected && gatt != null)
-            gatt.readRemoteRssi();
-    }
-
-    public boolean connectable() {
-        return !connected && (System.currentTimeMillis() - lastConReq > 2000);
-    }
 }
