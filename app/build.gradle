@@ -38,6 +38,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'no.nordicsemi.android:ble:2.1.1'
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.4.0'
 
     implementation 'com.hivemq:hivemq-mqtt-client:1.1.3'
 

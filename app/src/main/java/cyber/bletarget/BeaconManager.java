@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.ParcelUuid;
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -17,8 +18,14 @@ import androidx.lifecycle.ViewModelProviders;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import cyber.bletarget.ui.home.HomeViewModel;
+import no.nordicsemi.android.support.v18.scanner.BluetoothLeScannerCompat;
+import no.nordicsemi.android.support.v18.scanner.ScanCallback;
+import no.nordicsemi.android.support.v18.scanner.ScanFilter;
+import no.nordicsemi.android.support.v18.scanner.ScanResult;
+import no.nordicsemi.android.support.v18.scanner.ScanSettings;
 
 public class BeaconManager {
 
@@ -46,6 +53,58 @@ public class BeaconManager {
     }
 
     public synchronized void connectBeacons() {
+        //connectBeaconsInternal();
+        startScan();
+    }
+
+    private ScanCallback scanCallback = new ScanCallback() {
+        @Override
+        public void onScanResult(final int callbackType, final ScanResult result) {
+            // do nothing
+        }
+
+        @Override
+        public void onBatchScanResults(final List<ScanResult> results) {
+
+            for (final ScanResult result : results) {
+                String line = "";
+                try {
+                    BluetoothDevice device = result.getDevice();
+                    String name = result.getScanRecord() != null ? result.getScanRecord().getDeviceName() : "";
+                    int rssi = result.getRssi();
+                    String addr = device.getAddress();
+
+                    line = addr + "," + rssi + "," + name + "," + result.getTimestampNanos() / 1000;
+                    mqttRssi.publish("cyber/rssi", line);
+                } catch (Exception ex) {
+                    Log.e("TAG1", "exception!", ex);
+                }
+                Log.i("TAG1", line);
+            }
+
+
+        }
+
+        @Override
+        public void onScanFailed(final int errorCode) {
+            // should never be called
+        }
+    };
+
+    private void startScan() {
+        mqttRssi.connect();
+        final BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
+        final ScanSettings settings = new ScanSettings.Builder()
+                .setLegacy(false)
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(500).setUseHardwareBatchingIfSupported(false).build();
+        final List<ScanFilter> filters = new ArrayList<>();
+        ParcelUuid mUuid = new ParcelUuid(UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb"));
+        filters.add(new ScanFilter.Builder().setServiceUuid(mUuid).build());
+        scanner.startScan(filters, settings, scanCallback);
+
+    }
+
+    public synchronized void connectBeaconsInternal() {
 
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
 
