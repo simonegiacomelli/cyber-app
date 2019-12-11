@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
-    TextView textView3;
+//    TextView textView3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
-        textView3 = findViewById(R.id.textView3);
+//        textView3 = findViewById(R.id.textView3);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
