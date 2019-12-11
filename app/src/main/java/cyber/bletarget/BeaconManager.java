@@ -50,7 +50,7 @@ public class BeaconManager {
 
     public synchronized void connectBeacons() {
         //connectBeaconsInternal();
-        startScan();
+        //startScan();
     }
 
     private ScanCallback scanCallback = new ScanCallback() {

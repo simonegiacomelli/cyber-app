@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
                 BleService.stop(getApplicationContext());
 
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Stopping service", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });

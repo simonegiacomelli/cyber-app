@@ -1,5 +1,7 @@
 package cyber.bletarget;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -7,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.ParcelUuid;
+import android.os.SystemClock;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -38,6 +41,23 @@ public class BleService extends Service {
         return null;
     }
 
+
+    //this seems not to work
+    @Override
+    public void onTaskRemoved(Intent rootIntent){
+        Log.i("TAG1", "onTaskRemoved()");
+        Intent restartServiceIntent = new Intent(getApplicationContext(), this.getClass());
+        restartServiceIntent.setPackage(getPackageName());
+
+        PendingIntent restartServicePendingIntent = PendingIntent.getService(getApplicationContext(), 1, restartServiceIntent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager alarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+        alarmService.set(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 1000,
+                restartServicePendingIntent);
+
+        super.onTaskRemoved(rootIntent);
+    }
 
     @Override
     public boolean stopService(Intent name) {
@@ -132,7 +152,10 @@ public class BleService extends Service {
         scanner = BluetoothLeScannerCompat.getScanner();
         final ScanSettings settings = new ScanSettings.Builder()
                 .setLegacy(false)
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).setReportDelay(500).setUseHardwareBatchingIfSupported(false).build();
+                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setReportDelay(300)
+                .setUseHardwareBatchingIfSupported(false)
+                .build();
         final List<ScanFilter> filters = new ArrayList<>();
         ParcelUuid mUuid = new ParcelUuid(UUID.fromString("0000180f-0000-1000-8000-00805f9b34fb"));
         filters.add(new ScanFilter.Builder().setServiceUuid(mUuid).build());
@@ -156,6 +179,7 @@ public class BleService extends Service {
 
 
     public static void stop(Context context) {
+        Log.i("TAG1","BleService.stop(...) called");
         Intent i = new Intent(context, BleService.class);
         i.putExtra("KEY1", "Value to be used by the service");
         context.stopService(i);
