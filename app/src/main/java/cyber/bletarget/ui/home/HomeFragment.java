@@ -19,7 +19,7 @@ import cyber.bletarget.R;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
-    BeaconManager beaconManager;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {

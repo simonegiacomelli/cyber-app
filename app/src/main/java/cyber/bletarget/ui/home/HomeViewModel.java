@@ -1,6 +1,7 @@
 package cyber.bletarget.ui.home;
 
 import android.app.Application;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ public class HomeViewModel extends AndroidViewModel {
             beaconManager = new BeaconManager(application.getApplicationContext(), this);
 
         beaconManager.connectBeacons();
+
     }
 
     public LiveData<String> getText() {

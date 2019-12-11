@@ -1,5 +1,7 @@
 package cyber.bletarget;
 
+import android.util.Log;
+
 import com.hivemq.client.mqtt.datatypes.MqttQos;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5Client;
@@ -20,6 +22,14 @@ class MqttRssi {
 
         client.connect();
 
+    }
+
+    void disconnect() {
+        try {
+            client.disconnect();
+        } catch (Exception ex) {
+            Log.e("TAG1", "error mqtt disconnect()", ex);
+        }
     }
 
     void publish(String queueName, String payload) {
