@@ -9,11 +9,12 @@ import com.hivemq.client.mqtt.mqtt5.message.auth.Mqtt5SimpleAuth;
 
 import java.util.UUID;
 
-class MqttRssi {
+class MqttRssi implements Mqtt {
 
     private Mqtt5BlockingClient client;
 
-    void connect() {
+    @Override
+    public void connect() {
         client = Mqtt5Client.builder()
                 .identifier(UUID.randomUUID().toString())
                 .serverHost("mqtt.flespi.io")
@@ -24,7 +25,8 @@ class MqttRssi {
 
     }
 
-    void disconnect() {
+    @Override
+    public void disconnect() {
         try {
             client.disconnect();
         } catch (Exception ex) {
@@ -32,7 +34,8 @@ class MqttRssi {
         }
     }
 
-    void publish(String queueName, String payload) {
+    @Override
+    public void publish(String queueName, String payload) {
         client.publishWith()
                 .topic(queueName)
                 .qos(MqttQos.AT_LEAST_ONCE)

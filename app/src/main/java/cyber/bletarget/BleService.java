@@ -167,7 +167,7 @@ public class BleService extends Service {
     }
 
 
-    MqttRssi mqttRssi = new MqttRssi();
+    Mqtt mqttRssi = new MqttRssi();
 
 
     public static void start(Context context) {
