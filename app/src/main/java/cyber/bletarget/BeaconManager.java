@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,6 +33,7 @@ public class BeaconManager {
     //    String WEI = "";
     List<String> names = Arrays.asList("BEN", "CARL", "DAVE", "SIMO", "ANDREA", "ALE");
     List<String> addresses = Arrays.asList(BEN, CARL, DAVE, SIMO, ANDREA, ALE);
+    HashMap<String, String> address2name = new HashMap<>();
     //    List<String> addresses = Arrays.asList(BEN);
     private BluetoothAdapter mBTAdapter;
     private Context applicationContext;
@@ -41,6 +43,9 @@ public class BeaconManager {
     public BeaconManager(Context applicationContext, HomeViewModel homeViewModel) {
         this.applicationContext = applicationContext;
         this.homeViewModel = homeViewModel;
+        for (int i = 0; i < addresses.size(); i++) {
+            address2name.put(addresses.get(i), names.get(i));
+        }
     }
 
     public synchronized void connectBeacons() {
@@ -68,7 +73,7 @@ public class BeaconManager {
 
                     line = addr + "," + rssi + "," + name + "," + result.getTimestampNanos() / 1000;
                     mqttRssi.publish("cyber/rssi", line);
-                    homeViewModel.mText.postValue(line );
+                    homeViewModel.mText.postValue(line);
 
 
 
