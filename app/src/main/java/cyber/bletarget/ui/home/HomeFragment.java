@@ -43,7 +43,7 @@ public class HomeFragment extends Fragment {
 
         mWebView.setWebViewClient(new MyWebViewClient(mWebView));
 //        mWebView.loadUrl("https://google.com");
-                mWebView.loadUrl("https://c.jako.pro/cyber/circles/alessio/circle_loop_realtime.html");
+                mWebView.loadUrl("https://c.jako.pro/cyber/circles/simone/circle_loop_realtime.html");
 
         return v;
     }

@@ -44,7 +44,7 @@ public class BleService extends Service {
 
     //this seems not to work
     @Override
-    public void onTaskRemoved(Intent rootIntent){
+    public void onTaskRemoved(Intent rootIntent) {
         Log.i("TAG1", "onTaskRemoved()");
         Intent restartServiceIntent = new Intent(getApplicationContext(), this.getClass());
         restartServiceIntent.setPackage(getPackageName());
@@ -122,11 +122,11 @@ public class BleService extends Service {
                     String name = result.getScanRecord() != null ? result.getScanRecord().getDeviceName() : "";
                     int rssi = result.getRssi();
                     String addr = device.getAddress();
-
-                    line = addr + "," + rssi + "," + name + "," + result.getTimestampNanos() / 1000;
-                    mqttRssi.publish(queueName, line);
-                    //homeViewModel.mText.postValue(line);
-
+                    if (name.startsWith("SHAZAM")) {
+                        line = addr + "," + rssi + "," + name + "," + result.getTimestampNanos() / 1000;
+                        mqttRssi.publish(queueName, line);
+                        //homeViewModel.mText.postValue(line);
+                    }
 
                 } catch (Exception ex) {
                     Log.e("TAG1", "exception!", ex);
@@ -167,7 +167,7 @@ public class BleService extends Service {
     }
 
 
-//    Mqtt mqttRssi = new MqttRssi();
+    //    Mqtt mqttRssi = new MqttRssi();
     Mqtt mqttRssi = new MqttPaho();
 
 
@@ -180,7 +180,7 @@ public class BleService extends Service {
 
 
     public static void stop(Context context) {
-        Log.i("TAG1","BleService.stop(...) called");
+        Log.i("TAG1", "BleService.stop(...) called");
         Intent i = new Intent(context, BleService.class);
         i.putExtra("KEY1", "Value to be used by the service");
         context.stopService(i);
